@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Matematika SDN 2 Karangmangu</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border: 3px solid #FF6B81;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #FF6B81;
+            text-shadow: 1px 1px 0px #fff;
+        }
+
+        header h2 {
+            margin: 5px 0 0 0;
+            font-size: 18px;
+            color: #4a4a4a;
+            font-weight: 500;
+        }
+
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 4px solid #4EA8DE;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(to right, #4EA8DE, #56CFE1, #72EFDD, #56CFE1);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .score-box, .question-box-counter {
+            background: #f0f7ff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 2px solid #ddeeff;
+        }
+
+        .score-box { color: #2ecc71; border-color: #a3e4d7; background: #e8f8f5; }
+        .question-box-counter { color: #9b59b6; border-color: #ebdef0; background: #f5eeeb; }
+
+        .question-box {
+            font-size: 54px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 25px 0;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fdfefe;
+            border-radius: 15px;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 3px solid #cbd5e1;
+            border-radius: 15px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input[type="number"]:focus {
+            border-color: #4EA8DE;
+            box-shadow: 0 0 10px rgba(78, 168, 222, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            background: linear-gradient(to bottom, #4EA8DE, #4895EF);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 0px #3f7ec4;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom, #4895EF, #4EA8DE);
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0px #3f7ec4;
+        }
+
+        .feedback {
+            font-size: 22px;
+            font-weight: bold;
+            min-height: 35px;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .correct {
+            color: #155724;
+            background-color: #d4edda;
+            border: 2px solid #c3e6cb;
+        }
+
+        .incorrect {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 2px solid #f5c6cb;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        
+        footer strong {
+            color: #2c3e50;
+        }
+    </style>
+    <!-- Mengambil font Quicksand agar tampilan lebih ramah anak -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>Game Perkalian & Matematika</h1>
+    <h2>SDN 2 Karangmangu</h2>
+</header>
+
+<div class="game-container">
+    <div class="score-board">
+        <div class="score-box">⭐ Skor: <span id="score">0</span></div>
+        <div class="question-box-counter">📝 Soal ke: <span id="question-count">1</span></div>
+    </div>
+
+    <div class="question-box" id="question">--</div>
+
+    <div class="input-group">
+        <input type="number" id="answer-input" placeholder="Tulis jawaban di sini..." autocomplete="off">
+        <button id="submit-btn">Jawab! 🚀</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+</div>
+
+<footer>
+    Dikembangkan oleh <strong>Doni Yan Ariyanto / Rumah Koding Rembang</strong>
+</footer>
+
+<script>
+    let score = 0;
+    let questionCounter = 1;
+    let currentAnswer = 0;
+    let isWaiting = false;
+
+    const questionEl = document.getElementById('question');
+    const answerInput = document.getElementById('answer-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const feedbackEl = document.getElementById('feedback');
+    const scoreEl = document.getElementById('score');
+    const questionCountEl = document.getElementById('question-count');
+
+    function generateQuestion() {
+        // Jenis: 0 = Perkalian, 1 = Pembagian, 2 = Pangkat 2, 3 = Akar Kuadrat
+        const type = Math.floor(Math.random() * 4);
+        
+        let num1 = Math.floor(Math.random() * 9) + 1; // 1-9
+        let num2 = Math.floor(Math.random() * 9) + 1; // 1-9
+
+        switch(type) {
+            case 0: // Perkalian 1 Digit
+                questionEl.innerHTML = `${num1} &times; ${num2}`;
+                currentAnswer = num1 * num2;
+                break;
+                
+            case 1: // Pembagian (Hasil 1 digit)
+                let product = num1 * num2;
+                questionEl.innerHTML = `${product} &divide; ${num1}`;
+                currentAnswer = num2;
+                break;
+                
+            case 2: // Pangkat 2 (Bilangan 1 digit)
+                questionEl.innerHTML = `${num1}<sup>2</sup>`;
+                currentAnswer = num1 * num1;
+                break;
+                
+            case 3: // Akar Kuadrat (Hasil 1 digit)
+                let square = num1 * num1;
+                questionEl.innerHTML = `&radic;${square}`;
+                currentAnswer = num1;
+                break;
+        }
+        
+        answerInput.value = '';
+        feedbackEl.innerHTML = '';
+        feedbackEl.className = "feedback";
+        answerInput.focus();
+        isWaiting = false;
+    }
+
+    function checkAnswer() {
+        if (isWaiting || answerInput.value.trim() === '') return;
+        
+        isWaiting = true;
+        const userAnswer = parseInt(answerInput.value, 10);
+
+        if (userAnswer === currentAnswer) {
+            feedbackEl.innerHTML = "Benar! Bagus Sekali 🎉";
+            feedbackEl.className = "feedback correct";
+            score += 10;
+            scoreEl.textContent = score;
+        } else {
+            feedbackEl.innerHTML = `Salah! Jawaban benar adalah <strong>${currentAnswer}</strong>`;
+            feedbackEl.className = "feedback incorrect";
+        }
+
+        // Jeda 1.8 detik agar siswa sempat melihat hasil jawaban mereka
+        setTimeout(() => {
+            questionCounter++;
+            questionCountEl.textContent = questionCounter;
+            generateQuestion();
+        }, 1800);
+    }
+
+    submitBtn.addEventListener('click', checkAnswer);
+
+    answerInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+
+    // Jalankan game pertamakali
+    generateQuestion();
+</script>
+
+</body>
+</html>
