@@ -232,31 +232,40 @@
     const scoreEl = document.getElementById('score');
     const questionCountEl = document.getElementById('question-count');
 
+    // Fungsi pembantu untuk menghasilkan angka acak 1 digit selain 1, 2, dan 10
+    // Rentang angka yang digunakan murni: 3, 4, 5, 6, 7, 8, 9
+    function getRandomDigit() {
+        const validDigits = [3, 4, 5, 6, 7, 8, 9];
+        const randomIndex = Math.floor(Math.random() * validDigits.length);
+        return validDigits[randomIndex];
+    }
+
     function generateQuestion() {
         // Jenis: 0 = Perkalian, 1 = Pembagian, 2 = Pangkat 2, 3 = Akar Kuadrat
         const type = Math.floor(Math.random() * 4);
         
-        let num1 = Math.floor(Math.random() * 9) + 1; // 1-9
-        let num2 = Math.floor(Math.random() * 9) + 1; // 1-9
+        // Menggunakan angka acak yang sudah disaring (tanpa 1, 2, dan 10)
+        let num1 = getRandomDigit(); 
+        let num2 = getRandomDigit(); 
 
         switch(type) {
-            case 0: // Perkalian 1 Digit
+            case 0: // Perkalian (Contoh: 3 s.d 9 dikali 3 s.d 9)
                 questionEl.innerHTML = `${num1} &times; ${num2}`;
                 currentAnswer = num1 * num2;
                 break;
                 
-            case 1: // Pembagian (Hasil 1 digit)
+            case 1: // Pembagian (Contoh: 24 / 3 = 8. Angka 1, 2, dan 10 terhindar baik di soal maupun jawaban)
                 let product = num1 * num2;
                 questionEl.innerHTML = `${product} &divide; ${num1}`;
                 currentAnswer = num2;
                 break;
                 
-            case 2: // Pangkat 2 (Bilangan 1 digit)
+            case 2: // Pangkat 2 (Contoh: 3^2 s.d 9^2)
                 questionEl.innerHTML = `${num1}<sup>2</sup>`;
                 currentAnswer = num1 * num1;
                 break;
                 
-            case 3: // Akar Kuadrat (Hasil 1 digit)
+            case 3: // Akar Kuadrat (Contoh: akar 9 s.d akar 81)
                 let square = num1 * num1;
                 questionEl.innerHTML = `&radic;${square}`;
                 currentAnswer = num1;
@@ -286,7 +295,6 @@
             feedbackEl.className = "feedback incorrect";
         }
 
-        // Jeda 1.8 detik agar siswa sempat melihat hasil jawaban mereka
         setTimeout(() => {
             questionCounter++;
             questionCountEl.textContent = questionCounter;
@@ -302,7 +310,7 @@
         }
     });
 
-    // Jalankan game pertamakali
+    // Jalankan game pertama kali
     generateQuestion();
 </script>
 
