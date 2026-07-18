@@ -431,19 +431,22 @@
     }
 
     // Kirim Data ke Google Apps Script
-    function sendDataToSpreadsheet() {
-    if (SPREADSHEET_URL.includes("https://script.google.com/macros/s/AKfycbxO1JHBlwm_y4q03BPGgeyaSTy5nzXYd0n8_GC8yOlc7GV9gmzINSl6SlXLOduTMkuZ5Q/exec")) {
+  function sendDataToSpreadsheet() {
+    // Mengecek apakah URL masih berupa teks bawaan (belum diganti)
+    if (SPREADSHEET_URL === "" || SPREADSHEET_URL.includes("SILAKAN_GANTI_DENGAN_URL_WEB_APP_ANDA")) {
         dbStatusEl.textContent = "Data lokal tersimpan (Belum tersambung Google Sheets).";
         return;
     }
 
-    // Mengubah format data agar mudah diterima oleh Google Apps Script tanpa masalah keamanan browser
     const formData = new URLSearchParams();
     formData.append("nama", playerName);
     formData.append("total", totalAnswered);
     formData.append("benar", correctAnswers);
     formData.append("salah", incorrectAnswers);
     formData.append("skor", score);
+
+    // Mengubah status teks saat mulai mengirim
+    dbStatusEl.textContent = "Menyimpan hasil ke server...";
 
     fetch(SPREADSHEET_URL, {
         method: "POST",
