@@ -263,7 +263,7 @@
 
 <script>
     // URL Web App dari Google Apps Script (Ganti dengan URL milik Anda nanti)
-    const SPREADSHEET_URL = "SILAKAN_GANTI_DENGAN_URL_WEB_APP_ANDA";
+    const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbxO1JHBlwm_y4q03BPGgeyaSTy5nzXYd0n8_GC8yOlc7GV9gmzINSl6SlXLOduTMkuZ5Q/exec";
 
     let score = 0;
     let questionCounter = 1;
@@ -432,36 +432,34 @@
 
     // Kirim Data ke Google Apps Script
     function sendDataToSpreadsheet() {
-        if (SPREADSHEET_URL === "https://script.google.com/macros/s/AKfycbz13DRlx3ffeAg4qmkX8ovcllPNslfO83CA9gX66Nw5c8Z_ndDbDsR8pyMlj4j8JeImeQ/exec") {
-            dbStatusEl.textContent = "Data lokal tersimpan (Belum tersambung Google Sheets).";
-            return;
-        }
-
-        const data = {
-            nama: playerName,
-            total: totalAnswered,
-            benar: correctAnswers,
-            salah: incorrectAnswers,
-            skor: score
-        };
-
-        // Menggunakan fetch dengan metode POST
-        fetch(SPREADSHEET_URL, {
-            method: "POST",
-            mode: "no-cors", // Membantu menghindari isu CORS kebijakan Google
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-        .then(() => {
-            dbStatusEl.textContent = "✓ Nilai berhasil direkap ke Google Sheets!";
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            dbStatusEl.textContent = "Gagal mengirim data ke server.";
-        });
+    if (SPREADSHEET_URL.includes("https://script.google.com/macros/s/AKfycbxO1JHBlwm_y4q03BPGgeyaSTy5nzXYd0n8_GC8yOlc7GV9gmzINSl6SlXLOduTMkuZ5Q/exec")) {
+        dbStatusEl.textContent = "Data lokal tersimpan (Belum tersambung Google Sheets).";
+        return;
     }
+
+    // Mengubah format data agar mudah diterima oleh Google Apps Script tanpa masalah keamanan browser
+    const formData = new URLSearchParams();
+    formData.append("nama", playerName);
+    formData.append("total", totalAnswered);
+    formData.append("benar", correctAnswers);
+    formData.append("salah", incorrectAnswers);
+    formData.append("skor", score);
+
+    fetch(SPREADSHEET_URL, {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    })
+    .then(response => {
+        dbStatusEl.textContent = "✓ Nilai berhasil direkap ke Google Sheets!";
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        dbStatusEl.textContent = "Gagal mengirim data ke server.";
+    });
+}
 
     // Aksi tombol
     submitBtn.addEventListener('click', checkAnswer);
