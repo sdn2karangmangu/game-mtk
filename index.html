@@ -431,39 +431,7 @@
     }
 
     // Kirim Data ke Google Apps Script
-  function sendDataToSpreadsheet() {
-    // Mengecek apakah URL masih berupa teks bawaan (belum diganti)
-    if (SPREADSHEET_URL === "" || SPREADSHEET_URL.includes("SILAKAN_GANTI_DENGAN_URL_WEB_APP_ANDA")) {
-        dbStatusEl.textContent = "Data lokal tersimpan (Belum tersambung Google Sheets).";
-        return;
-    }
-
-    const formData = new URLSearchParams();
-    formData.append("nama", playerName);
-    formData.append("total", totalAnswered);
-    formData.append("benar", correctAnswers);
-    formData.append("salah", incorrectAnswers);
-    formData.append("skor", score);
-
-    // Mengubah status teks saat mulai mengirim
-    dbStatusEl.textContent = "Menyimpan hasil ke server...";
-
-    fetch(SPREADSHEET_URL, {
-        method: "POST",
-        body: formData,
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    })
-    .then(response => {
-        dbStatusEl.textContent = "✓ Nilai berhasil direkap ke Google Sheets!";
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        dbStatusEl.textContent = "Gagal mengirim data ke server.";
-    });
-}
-
+    
     // Aksi tombol
     submitBtn.addEventListener('click', checkAnswer);
     answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
