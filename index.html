@@ -447,6 +447,41 @@
     }
 
     // Kirim Data ke Google Apps Script
+
+    // Kirim Data ke Google Apps Script
+    function sendDataToSpreadsheet() {
+        const formData = new URLSearchParams();
+        formData.append("nama", playerName);
+        formData.append("total", totalAnswered);
+        formData.append("benar", correctAnswers);
+        formData.append("salah", incorrectAnswers);
+        formData.append("skor", score);
+
+        fetch(SPREADSHEET_URL, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                dbStatusEl.textContent = "✓ Nilai berhasil direkap ke Google Sheets!";
+            } else {
+                dbStatusEl.textContent = "Gagal menyimpan: " + data.message;
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            dbStatusEl.textContent = "Gagal mengirim data ke server.";
+        });
+    }
+
+    // Aksi tombol
+    submitBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    restartBtn.addEventListener('click', () => { switchScreen(menuScreen); playerNameInput.value = ""; });
     
     // Aksi tombol
     submitBtn.addEventListener('click', checkAnswer);
