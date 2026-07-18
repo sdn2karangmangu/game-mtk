@@ -75,18 +75,21 @@
             justify-content: space-between;
             margin-bottom: 25px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
+            gap: 5px;
         }
 
-        .score-box, .question-box-counter {
+        .score-box, .question-box-counter, .timer-box {
             background: #f0f7ff;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 12px;
             border: 2px solid #ddeeff;
+            flex: 1;
         }
 
         .score-box { color: #2ecc71; border-color: #a3e4d7; background: #e8f8f5; }
         .question-box-counter { color: #9b59b6; border-color: #ebdef0; background: #f5eeeb; }
+        .timer-box { color: #e74c3c; border-color: #fadbd8; background: #fdf2f2; }
 
         .question-box {
             font-size: 54px;
@@ -109,10 +112,10 @@
             margin-bottom: 20px;
         }
 
-        input[type="number"] {
+        input {
             width: 100%;
             padding: 15px;
-            font-size: 24px;
+            font-size: 20px;
             border: 3px solid #cbd5e1;
             border-radius: 15px;
             text-align: center;
@@ -122,7 +125,7 @@
             color: #334155;
         }
 
-        input[type="number"]:focus {
+        input:focus {
             border-color: #4EA8DE;
             box-shadow: 0 0 10px rgba(78, 168, 222, 0.3);
         }
@@ -151,7 +154,7 @@
         }
 
         .feedback {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             min-height: 35px;
             margin-top: 15px;
@@ -160,16 +163,27 @@
             transition: all 0.3s;
         }
 
-        .correct {
-            color: #155724;
-            background-color: #d4edda;
-            border: 2px solid #c3e6cb;
-        }
+        .correct { color: #155724; background-color: #d4edda; border: 2px solid #c3e6cb; }
+        .incorrect { color: #721c24; background-color: #f8d7da; border: 2px solid #f5c6cb; }
 
-        .incorrect {
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 2px solid #f5c6cb;
+        /* Tampilan halaman panel */
+        .screen { display: none; }
+        .active { display: block; }
+        
+        .result-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        .result-table td {
+            padding: 10px;
+            text-align: left;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-table td:last-child {
+            text-align: right;
+            font-weight: bold;
         }
 
         footer {
@@ -185,11 +199,8 @@
             border: 1px solid rgba(255,255,255,0.6);
         }
         
-        footer strong {
-            color: #2c3e50;
-        }
+        footer strong { color: #2c3e50; }
     </style>
-    <!-- Mengambil font Quicksand agar tampilan lebih ramah anak -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -200,19 +211,50 @@
 </header>
 
 <div class="game-container">
-    <div class="score-board">
-        <div class="score-box">⭐ Skor: <span id="score">0</span></div>
-        <div class="question-box-counter">📝 Soal ke: <span id="question-count">1</span></div>
+    
+    <!-- MENU AWAL -->
+    <div id="menu-screen" class="screen active">
+        <h3>Selamat Datang!</h3>
+        <p>Masukkan namamu untuk memulai tantangan 1 menit:</p>
+        <div class="input-group">
+            <input type="text" id="player-name" placeholder="Nama Lengkap Kamu..." autocomplete="off">
+            <button id="start-btn">Mulai Bermain! 🎮</button>
+        </div>
     </div>
 
-    <div class="question-box" id="question">--</div>
+    <!-- LAYAR PERMAINAN -->
+    <div id="game-screen" class="screen">
+        <div class="score-board">
+            <div class="timer-box">⏱️ Waktu: <span id="timer">60</span>s</div>
+            <div class="score-box">⭐ Skor: <span id="score">0</span></div>
+            <div class="question-box-counter">📝 Soal: <span id="question-count">1</span></div>
+        </div>
 
-    <div class="input-group">
-        <input type="number" id="answer-input" placeholder="Tulis jawaban di sini..." autocomplete="off">
-        <button id="submit-btn">Jawab! 🚀</button>
+        <div class="question-box" id="question">--</div>
+
+        <div class="input-group">
+            <input type="number" id="answer-input" placeholder="Jawaban..." autocomplete="off">
+            <button id="submit-btn">Jawab! 🚀</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
     </div>
 
-    <div class="feedback" id="feedback"></div>
+    <!-- LAYAR HASIL AKHIR -->
+    <div id="result-screen" class="screen">
+        <h3>🎉 Permainan Selesai! 🎉</h3>
+        <p>Hebat <span id="res-name" style="font-weight:bold; color:#4EA8DE;"></span>, ini hasil belajarmu:</p>
+        
+        <table class="result-table">
+            <tr><td>Total Dijawab</td><td><span id="res-total">0</span></td></tr>
+            <tr><td style="color: #2ecc71;">Jawaban Benar</td><td style="color: #2ecc71;"><span id="res-correct">0</span></td></tr>
+            <tr><td style="color: #e74c3c;">Jawaban Salah</td><td style="color: #e74c3c;"><span id="res-incorrect">0</span></td></tr>
+            <tr><td>Total Skor</td><td><span id="res-score">0</span></td></tr>
+        </table>
+
+        <button id="restart-btn">Main Lagi 🔄</button>
+        <p id="db-status" style="font-size:12px; color:#7f8c8d; margin-top:10px;"></p>
+    </div>
 </div>
 
 <footer>
@@ -220,52 +262,114 @@
 </footer>
 
 <script>
+    // URL Web App dari Google Apps Script (Ganti dengan URL milik Anda nanti)
+    const SPREADSHEET_URL = "SILAKAN_GANTI_DENGAN_URL_WEB_APP_ANDA";
+
     let score = 0;
     let questionCounter = 1;
     let currentAnswer = 0;
     let isWaiting = false;
+    let playerName = "";
+    
+    // Variabel baru untuk analisis kecepatan anak
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+    let totalAnswered = 0;
+    let timeLeft = 60;
+    let timerInterval;
 
+    // Elemen Layar
+    const menuScreen = document.getElementById('menu-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultScreen = document.getElementById('result-screen');
+
+    // Elemen Kontrol/Input
+    const playerNameInput = document.getElementById('player-name');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
     const questionEl = document.getElementById('question');
     const answerInput = document.getElementById('answer-input');
     const submitBtn = document.getElementById('submit-btn');
+    
+    // Elemen Informasi
     const feedbackEl = document.getElementById('feedback');
     const scoreEl = document.getElementById('score');
     const questionCountEl = document.getElementById('question-count');
+    const timerEl = document.getElementById('timer');
+    const dbStatusEl = document.getElementById('db-status');
 
-    // Fungsi pembantu untuk menghasilkan angka acak 1 digit selain 1, 2, dan 10
-    // Rentang angka yang digunakan murni: 3, 4, 5, 6, 7, 8, 9
+    // Fungsi pembantu angka acak (3-9)
     function getRandomDigit() {
         const validDigits = [3, 4, 5, 6, 7, 8, 9];
         const randomIndex = Math.floor(Math.random() * validDigits.length);
         return validDigits[randomIndex];
     }
 
-    function generateQuestion() {
-        // Jenis: 0 = Perkalian, 1 = Pembagian, 2 = Pangkat 2, 3 = Akar Kuadrat
-        const type = Math.floor(Math.random() * 4);
+    // Pindah Layar Tampilan
+    function switchScreen(screenToShow) {
+        [menuScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
+        screenToShow.classList.add('active');
+    }
+
+    // Tombol Mulai Ditekan
+    startBtn.addEventListener('click', () => {
+        playerName = playerNameInput.value.trim();
+        if (playerName === "") {
+            alert("Silakan masukkan namamu terlebih dahulu ya!");
+            return;
+        }
+        initGame();
+    });
+
+    // Inisialisasi Game Baru
+    function initGame() {
+        score = 0;
+        questionCounter = 1;
+        correctAnswers = 0;
+        incorrectAnswers = 0;
+        totalAnswered = 0;
+        timeLeft = 60;
+        isWaiting = false;
+
+        scoreEl.textContent = score;
+        questionCountEl.textContent = questionCounter;
+        timerEl.textContent = timeLeft;
+        feedbackEl.innerHTML = '';
+        feedbackEl.className = "feedback";
         
-        // Menggunakan angka acak yang sudah disaring (tanpa 1, 2, dan 10)
+        switchScreen(gameScreen);
+        generateQuestion();
+        
+        // Mulai Hitung Mundur 1 Menit
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000);
+    }
+
+    function generateQuestion() {
+        const type = Math.floor(Math.random() * 4);
         let num1 = getRandomDigit(); 
         let num2 = getRandomDigit(); 
 
         switch(type) {
-            case 0: // Perkalian (Contoh: 3 s.d 9 dikali 3 s.d 9)
+            case 0: // Perkalian
                 questionEl.innerHTML = `${num1} &times; ${num2}`;
                 currentAnswer = num1 * num2;
                 break;
-                
-            case 1: // Pembagian (Contoh: 24 / 3 = 8. Angka 1, 2, dan 10 terhindar baik di soal maupun jawaban)
+            case 1: // Pembagian
                 let product = num1 * num2;
                 questionEl.innerHTML = `${product} &divide; ${num1}`;
                 currentAnswer = num2;
                 break;
-                
-            case 2: // Pangkat 2 (Contoh: 3^2 s.d 9^2)
+            case 2: // Pangkat 2
                 questionEl.innerHTML = `${num1}<sup>2</sup>`;
                 currentAnswer = num1 * num1;
                 break;
-                
-            case 3: // Akar Kuadrat (Contoh: akar 9 s.d akar 81)
+            case 3: // Akar Kuadrat
                 let square = num1 * num1;
                 questionEl.innerHTML = `&radic;${square}`;
                 currentAnswer = num1;
@@ -273,8 +377,6 @@
         }
         
         answerInput.value = '';
-        feedbackEl.innerHTML = '';
-        feedbackEl.className = "feedback";
         answerInput.focus();
         isWaiting = false;
     }
@@ -283,35 +385,88 @@
         if (isWaiting || answerInput.value.trim() === '') return;
         
         isWaiting = true;
+        totalAnswered++;
         const userAnswer = parseInt(answerInput.value, 10);
 
         if (userAnswer === currentAnswer) {
             feedbackEl.innerHTML = "Benar! Bagus Sekali 🎉";
             feedbackEl.className = "feedback correct";
             score += 10;
+            correctAnswers++;
             scoreEl.textContent = score;
         } else {
-            feedbackEl.innerHTML = `Salah! Jawaban benar adalah <strong>${currentAnswer}</strong>`;
+            feedbackEl.innerHTML = `Salah! Jawaban: <strong>${currentAnswer}</strong>`;
             feedbackEl.className = "feedback incorrect";
+            incorrectAnswers++;
         }
 
+        // Jeda singkat sebelum ganti soal otomatis
         setTimeout(() => {
-            questionCounter++;
-            questionCountEl.textContent = questionCounter;
-            generateQuestion();
-        }, 1800);
+            if(timeLeft > 0) {
+                questionCounter++;
+                questionCountEl.textContent = questionCounter;
+                feedbackEl.innerHTML = '';
+                feedbackEl.className = "feedback";
+                generateQuestion();
+            }
+        }, 800); // Dipercepat dari 1800ms agar anak bisa menjawab lebih banyak soal dalam 1 menit
     }
 
-    submitBtn.addEventListener('click', checkAnswer);
+    // Game Selesai (Waktu Habis)
+    function endGame() {
+        clearInterval(timerInterval);
+        
+        // Isi data halaman hasil
+        document.getElementById('res-name').textContent = playerName;
+        document.getElementById('res-total').textContent = totalAnswered;
+        document.getElementById('res-correct').textContent = correctAnswers;
+        document.getElementById('res-incorrect').textContent = incorrectAnswers;
+        document.getElementById('res-score').textContent = score;
+        
+        switchScreen(resultScreen);
+        dbStatusEl.textContent = "Menyimpan hasil ke server...";
+        
+        // Kirim data ke Google Sheets secara otomatis
+        sendDataToSpreadsheet();
+    }
 
-    answerInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            checkAnswer();
+    // Kirim Data ke Google Apps Script
+    function sendDataToSpreadsheet() {
+        if (SPREADSHEET_URL === "https://script.google.com/macros/s/AKfycbz13DRlx3ffeAg4qmkX8ovcllPNslfO83CA9gX66Nw5c8Z_ndDbDsR8pyMlj4j8JeImeQ/exec") {
+            dbStatusEl.textContent = "Data lokal tersimpan (Belum tersambung Google Sheets).";
+            return;
         }
-    });
 
-    // Jalankan game pertama kali
-    generateQuestion();
+        const data = {
+            nama: playerName,
+            total: totalAnswered,
+            benar: correctAnswers,
+            salah: incorrectAnswers,
+            skor: score
+        };
+
+        // Menggunakan fetch dengan metode POST
+        fetch(SPREADSHEET_URL, {
+            method: "POST",
+            mode: "no-cors", // Membantu menghindari isu CORS kebijakan Google
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            dbStatusEl.textContent = "✓ Nilai berhasil direkap ke Google Sheets!";
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            dbStatusEl.textContent = "Gagal mengirim data ke server.";
+        });
+    }
+
+    // Aksi tombol
+    submitBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    restartBtn.addEventListener('click', () => { switchScreen(menuScreen); playerNameInput.value = ""; });
 </script>
 
 </body>
